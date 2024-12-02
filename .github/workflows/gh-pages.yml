@@ -44,3 +44,8 @@ jobs:
         run: |
           mkdir pages
           mv build/zxing_* build/*.html pages
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'pages'
