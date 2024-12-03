@@ -55,6 +55,7 @@
 
   <h2 class="mb-4">Lecteur de Code Barre</h2>
 
+
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-md-4">
       <div class="mb-3">
@@ -115,7 +116,7 @@
   <div id="result" class="alert alert-info">Scan result will be displayed here</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     var zxing = ZXing().then(function (instance) {
       zxing = instance;
@@ -187,14 +188,6 @@
         resultElement.innerText = code.format + ": " + escapeTags(code.text);
         drawResult(code);
 
-        // Always show modal when barcode is scanned
-		// dont create a new modal instance each time
-		//
-		if (!document.getElementById('myModal').classList.contains('show')) {
-        	var modal = new bootstrap.Modal(document.getElementById('myModal'));
-			}
-
-
         // Only make a request if 3 seconds have passed since the last one
         if (Date.now() - lastTime > 3000) {
           lastTime = Date.now();
@@ -203,15 +196,14 @@
           fetch(`https://mirabelle.openfoodfacts.org/products/simplified.json?code__exact=${code.text}&_shape=array`)
             .then(response => response.json())
             .then(data => {
-              console.log(data);
               if (data.length > 0) {
                 const matchingData = data[0];
                 if (matchingData) {
                   let htmlContent = `
                     <h2 style="color: green; text-align: center;">PRODUIT</h2>
                     <h3 style="text-align: center;">${escapeTags(matchingData.product_name)}</h3>
-					<p><strong>Marque :</strong> ${escapeTags(matchingData.brands)}</p>
-					<p><strong>Catégories :</strong> ${escapeTags(matchingData.categories)}</p>
+                    <p><strong>Marque :</strong> ${escapeTags(matchingData.brands)}</p>
+                    <p><strong>Catégories :</strong> ${escapeTags(matchingData.categories)}</p>
                     <img src="${escapeTags(matchingData.image_url)}" style="display: block; margin: 0 auto; max-width: 100%; max-height: 200px;"/>
                   `;
                   popupContent.innerHTML = htmlContent;
@@ -230,15 +222,12 @@
           fetch(`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`)
             .then(response => response.json())
             .then(data => {
-              console.log(data);
               if (data.length > 0) {
                 const matchingData = data[0];
                 if (matchingData) {
-					const date = new Date(escapeTags(matchingData.date_publication));
-
-					// Formatting the date to a French text format
-					const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
-					const formattedDate = date.toLocaleString('fr-FR', options);
+                  const date = new Date(escapeTags(matchingData.date_publication));
+                  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
+                  const formattedDate = date.toLocaleString('fr-FR', options);
 
                   let htmlContent = `
                     <h2 style="color: red; text-align: center;">RAPPEL DE PRODUIT</h2>
@@ -265,20 +254,20 @@
                 } else {
                   popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
                   popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
-                  resultElement.innerText = "Aucune alerte connue concernant ce produit.";
                 }
               } else {
                 popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
                 popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
-                resultElement.innerText = "Erreur.";
               }
             })
             .catch((error) => {
               console.error('Error:', error);
             });
-			if (!document.getElementById('myModal').classList.contains('show')) {
-				modal.show();
-			}
+
+          // Show the modal
+          var modalElement = document.getElementById('myModal');
+          var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+          modal.show();
         }
       }
 
