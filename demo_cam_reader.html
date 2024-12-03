@@ -59,8 +59,8 @@
 				<div class="mb-3">
 					<label for="cameraSelector" class="form-label">Camera:</label>
 					<select id="cameraSelector" class="form-select">
-						<option value="user">Front Camera</option>
 						<option value="environment">Back Camera</option>
+						<option value="user">Front Camera</option>
 					</select>
 				</div>
 			</div>
@@ -221,28 +221,28 @@
 				try {
 					var popupContent = document.getElementById("popupwide");
 					const response = await fetch(
-							`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`,
-							{
-								method: "GET",
-							}
-						)
-							.then((response) => response.json())
-							.then((data) => {
-								if (data.length > 0) {
-									const matchingData = data[0];
-									if (matchingData) {
-										const date = new Date(escapeTags(matchingData.date_publication));
-										const options = {
-											year: "numeric",
-											month: "long",
-											day: "numeric",
-											hour: "2-digit",
-											minute: "2-digit",
-											timeZoneName: "short",
-										};
-										const formattedDate = date.toLocaleString("fr-FR", options);
+						`https://mirabelle.openfoodfacts.org/rappelconso_v2_gtin_trie/rappelconso_v2_gtin_trie.json?_sort=rowid&%EF%BB%BFgtin__exact=${code.text}&_shape=array`,
+						{
+							method: "GET",
+						}
+					)
+						.then((response) => response.json())
+						.then((data) => {
+							if (data.length > 0) {
+								const matchingData = data[0];
+								if (matchingData) {
+									const date = new Date(escapeTags(matchingData.date_publication));
+									const options = {
+										year: "numeric",
+										month: "long",
+										day: "numeric",
+										hour: "2-digit",
+										minute: "2-digit",
+										timeZoneName: "short",
+									};
+									const formattedDate = date.toLocaleString("fr-FR", options);
 
-										let htmlContent = `
+									let htmlContent = `
 											<h2 style="color: red; text-align: center;">RAPPEL DE PRODUIT</h2>
 											<h3 style="text-align: center;">${escapeTags(matchingData.marque_produit)}</h3>
 											<p><strong>Publication du :</strong> ${formattedDate}</p>
@@ -263,22 +263,21 @@
 											</button>
 										`;
 
-										popupContent.innerHTML += htmlContent;
-									} else {
-										popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
-										popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
-									}
+									popupContent.innerHTML += htmlContent;
 								} else {
 									popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
 									popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
 								}
-							})
-						} catch (error) {
+							} else {
+								popupContent.innerHTML += "Aucune alerte connue concernant ce produit.";
+								popupContent.innerHTML += `<br/><button onclick="window.open('https://rappel.conso.gouv.fr/', '_blank')" class="btn btn-primary">Vérifier sur Rappel Conso</button>`;
+							}
+						});
+				} catch (error) {
 					console.error("Error:", error);
 					resultElement.innerText = "Error.<br>";
 				}
 			}
-
 
 			const processFrame = function () {
 				ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -299,7 +298,7 @@
 						fetchData(code);
 
 						// Fetch data from the API
-						fetchDataRC(code)
+						fetchDataRC(code);
 
 						// Show the modal
 						var modalElement = document.getElementById("myModal");
