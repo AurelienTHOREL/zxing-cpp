@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Lecteur de Code Barre</title>
   <link rel="shortcut icon" href="#" />
   <script src="zxing_reader.js"></script>
@@ -27,6 +28,11 @@
       font-size: 14px;
       line-height: 1.5;
     }
+
+    canvas {
+      width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 
@@ -50,7 +56,7 @@
   <h2 class="mb-4">Lecteur de Code Barre</h2>
 
   <div class="row justify-content-center mb-4">
-    <div class="col-md-4">
+    <div class="col-12 col-md-4">
       <div class="mb-3">
         <label for="cameraSelector" class="form-label">Camera:</label>
         <select id="cameraSelector" class="form-select">
@@ -59,7 +65,7 @@
         </select>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-12 col-md-4">
       <div class="mb-3">
         <label for="format" class="form-label">Format:</label>
         <select id="format" class="form-select">
@@ -85,10 +91,11 @@
           <option value="UPCE">UPC-E</option>
           <option value="LinearCodes">Linear Codes</option>
           <option value="MatrixCodes">Matrix Codes</option>
+          <!-- Add the rest of the format options here -->
         </select>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-12 col-md-4">
       <div class="mb-3">
         <label for="mode" class="form-label">Mode:</label>
         <select id="mode" class="form-select">
@@ -99,7 +106,11 @@
     </div>
   </div>
 
-  <canvas id="canvas" width="640" height="480" class="border mb-4"></canvas>
+  <div class="row justify-content-center mb-4">
+    <div class="col-12">
+      <canvas id="canvas" class="border mb-4"></canvas>
+    </div>
+  </div>
 
   <div id="result" class="alert alert-info">Scan result will be displayed here</div>
 
@@ -119,11 +130,16 @@
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     const video = document.createElement("video");
     video.setAttribute("id", "video");
-    video.setAttribute("width", canvas.width);
-    video.setAttribute("height", canvas.height);
-    video.setAttribute("autoplay", "");
 
     let lastTime = 0; // Track the last time a request was made
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * 0.9;
+      canvas.height = (canvas.width / 4) * 3; // Maintain a 4:3 aspect ratio
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
     function readBarcodeFromCanvas(canvas, format, mode) {
       var imgWidth = canvas.width;
@@ -163,16 +179,8 @@
 
     const processFrame = function () {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "green";
-      ctx.moveTo(0, 0);
-      ctx.lineTo(0, canvas.height);
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(canvas.width, 0);
-      ctx.stroke();
-
       const code = readBarcodeFromCanvas(canvas, format.value, mode.value === 'true');
+
       if (code.format) {
         var popupContent = document.getElementById("popupwide");
 
@@ -297,7 +305,7 @@
       updateVideoStream(this.value);
     });
 
-    updateVideoStream();
+    updateVideoStream(cameraSelector.value);
   </script>
 </body>
 
