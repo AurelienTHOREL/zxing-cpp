@@ -45,7 +45,7 @@
           <h5 class="modal-title">Produit Information</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" id="popupwide">Some text in the Modal..</div>
+        <div class="modal-body" id="popupwide"></div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
         </div>
@@ -191,7 +191,7 @@
         // Only make a request if 3 seconds have passed since the last one
         if (Date.now() - lastTime > 3000) {
           lastTime = Date.now();
-
+		  resultElement.innerText = "No data found.";
           // Fetch OpenFoodFacts data
           fetch(`https://mirabelle.openfoodfacts.org/products/simplified.json?code__exact=${code.text}&_shape=array`)
             .then(response => response.json())
@@ -208,14 +208,17 @@
                   `;
                   popupContent.innerHTML = htmlContent;
                 } else {
-                  resultElement.innerText = "No data found.";
+					popupContent.innerHTML = "No data found.<br>";
+					resultElement.innerText = "No data found.";
                 }
               } else {
+				popupContent.innerHTML = "No data found.<br>";
                 resultElement.innerText = "No data found.";
               }
             })
             .catch((error) => {
               console.error('Error:', error);
+			  resultElement.innerText = "Error.<br>";
             });
 
           // Fetch data from the API
@@ -262,6 +265,7 @@
             })
             .catch((error) => {
               console.error('Error:', error);
+			  resultElement.innerText = "Error.";
             });
 
           // Show the modal
